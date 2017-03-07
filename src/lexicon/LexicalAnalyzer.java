@@ -1,7 +1,5 @@
 package lexicon;
 
-import static lexicon.TCategory.MAIN;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +8,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.swing.plaf.synth.SynthSeparatorUI;
 
 public class LexicalAnalyzer {
 	
@@ -104,8 +101,22 @@ public class LexicalAnalyzer {
 		}
 	}
 
+	/**
+	 * checks if the given character is a digit [0-9]
+	 * @param c
+	 * @return
+	 */
 	private boolean isDigit(char c) {
 		return Character.toString(c).matches("\\d");
+	}
+	
+	/**
+	 * checks if the given character is a word character [a-zA-Z_0-9]
+	 * @param c
+	 * @return 
+	 */
+	private boolean isWordChar(char c) {
+		return Character.toString(c).matches("\\w");
 	}
 	
 	private char nextChar() {
@@ -123,7 +134,6 @@ public class LexicalAnalyzer {
 	 * @return the token
 	 */
 	public Token nextToken() {
-		//TODO
 		char currChar;
 		String tValue = "";
 		Token token = null;
@@ -151,71 +161,79 @@ public class LexicalAnalyzer {
 					currChar = nextChar();
 				}
 			}
-			
+		}
+		if(isWordChar(currChar)) {
+			tValue += currChar;
+			currChar = nextChar();
+			while(isWordChar(currChar)) {
+				tValue += currChar;
+				currChar = nextChar();
+			}
+			currColumn--;
 		}
 		if(tValue == "") {
 			switch(currChar) {
 			case '"':			// Cchar token
-				//TODO
+				tValue += currChar;
+				currChar = nextChar();
+				while(currChar != '"') {
+					tValue += currChar;
+					currChar = nextChar();
+				}
+				tValue += currChar;
 				break;
-			case '/':			// division token (/, /=)
-				//TODO
+			case '\'':			// char token
+				tValue += currChar;
+				currChar = nextChar();
+				while(currChar != '\'') {
+					tValue += currChar;
+					currChar = nextChar();
+				}
+				tValue += currChar;
+				break;
+			case '/':			// division and comment token (/, /=, /#)
+				tValue += currChar;
+				currChar = nextChar();
+				if(currChar == '=' || currChar == '#') {
+					tValue += currChar;
+				}
 				break;
 			case '<':			// less then token (<, <=)
-				//TODO
-				break;
 			case '>':			// bigger then token (>, >=)
-				//TODO
-				break;
 			case '=':			// assignment or comparison token (=, ==)
-				//TODO
-				break;
 			case '+':			// plus token (+, +=)
-				//TODO
-				break;
+			case '-':			// subtraction or unary neg token (-, -=)
 			case '*':			// multiply token (*, *=)
-				//TODO
+				tValue += currChar;
+				currChar = nextChar();
+				if(currChar == '=') {
+					tValue += currChar;
+				}
+				break;
+			case '#':			// comment token (#, #/)
+				tValue += currChar;
+				currChar = nextChar();
+				if(currChar == '\\') {
+					tValue += currChar;
+				}
 				break;
 			case '(':
-				//TODO
-				break;
 			case ')':
-				//TODO
-				break;
 			case '[':
-				//TODO
-				break;
 			case ']':
-				//TODO
+			case '{':
+			case '}':
+			case ';':
+			case ',':
+				tValue += currChar;
 				break;
 			}
 		}
-		
-		
-/*
-		line = lines.get(currLine);
-		currChar = line.charAt(currColumn); 
-		while(currChar != ' ') {
-			if(currColumn < line.length()) {
-				tValue += line.substring(currColumn, currColumn+1);
-				currColumn++;
-				if(currColumn >= line.length()) {
-					break;
-				}
-				currChar = line.charAt(currColumn);
-			} else {
-				if(currLine < lines.size()) {
-					currLine++;
-					line = lines.get(currLine);
-					currColumn = 0;
-				}
-				break;
-			}
-		}
-*/
-		
-		token = new Token(tValue, currLine+1, currColumn-tValue.length()+1);
+
 		currColumn++;
+		if(tValue != "") {
+			token = new Token(tValue, currLine+1, currColumn-tValue.length()+1);
+		}
 		return token;
 	}
 	
