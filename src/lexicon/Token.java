@@ -1,5 +1,6 @@
 package lexicon;
 
+import static lexicon.LexicalTable.*;
 
 /**
  * 
@@ -26,8 +27,28 @@ public class Token {
 	}
 	
 	public static TCategory AnalyzeCategory(String value) {
-		//TODO
-		return null;
+		TCategory tc = null;
+		
+		if(value.charAt(0) == '"') {
+			tc = lexemeMap.get("\"");
+			
+		} else if(value.charAt(0) == '\'') {
+			tc = lexemeMap.get("\'");
+			
+		} else if(isLexem(value)) {
+			tc = lexemeMap.get(value);
+			
+		} else if(value.matches("[+-]?([0-9]*[.])?[0-9]+")) {
+			tc = lexemeMap.get("id");
+			
+		} else if(value.matches("\\w+")) {
+			tc = TCategory.VARIABLE;
+			
+		} else {
+			tc = TCategory.UNKNOWN;
+		}
+		
+		return tc;
 	}
 	
 	
