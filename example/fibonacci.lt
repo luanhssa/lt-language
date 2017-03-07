@@ -1,0 +1,32 @@
+fibonacci(int max) void {
+  int count;
+  int fib1;
+  int fib2;
+  int sum;
+
+  fib1 = 1;
+  fib2 = 1;
+  count = 3;
+
+  if(max == 0) {
+    print(max);
+  };
+
+  while(count <= max) {
+
+    sum = fib1 + fib2;
+    fib1 = fib2;
+    fib2 = sum;
+
+    count = count + 1;
+  };
+
+  print(fib2);
+};
+
+main() void {
+  int n;
+  read(int, n);
+
+  fibonacci(n);
+};
