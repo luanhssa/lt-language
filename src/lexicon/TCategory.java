@@ -47,7 +47,9 @@ public enum TCategory {
 	OPARITEXP(43),
 	OPNEGUN(44),
 	OPREL(45),
-	OPCONC(46);
+	OPCONC(46),
+	VARIABLE(47),
+	UNKNOWN(48);
 	
 	
 	private int value;
